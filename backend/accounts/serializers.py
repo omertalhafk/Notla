@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from django.contrib.auth import authenticate
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -46,3 +47,39 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+    
+class UserLoginSerializer(serializers.Serializer):
+    """
+    Login (giriş) için serializer.
+    Email ve şifre alır, token döner.
+    """
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    
+    def validate(self, data):
+        """
+        Email ve şifreyi kontrol et.
+        """
+        email = data.get('email')
+        password = data.get('password')
+        
+        if email and password:
+            # Kullanıcıyı doğrula
+            user = authenticate(username=email, password=password)
+            
+            if not user:
+                raise serializers.ValidationError(
+                    'Email veya şifre hatalı!'
+                )
+            
+            if not user.is_active:
+                raise serializers.ValidationError(
+                    'Bu hesap devre dışı bırakılmış!'
+                )
+            
+            data['user'] = user
+            return data
+        else:
+            raise serializers.ValidationError(
+                'Email ve şifre gerekli!'
+            )
