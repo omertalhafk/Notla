@@ -17,3 +17,4 @@ class UserAdmin(BaseUserAdmin):
         ('Ek Bilgiler', {'fields': ('is_verified', 'created_at')}),
     )
     readonly_fields = ['created_at']
+    

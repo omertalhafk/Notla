@@ -32,5 +32,5 @@ python manage.py runserver
 
 ## Teknolojiler
 
-- **Backend:** Django, PostgreSQL
+- **Backend:** Django,PostgreSQL
 - **Frontend:** React (yakında)
