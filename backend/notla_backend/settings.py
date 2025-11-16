@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     # Bizim eklediğimiz
     'rest_framework',
     'corsheaders',
-    'accounts'
+    'accounts',
+    'courses',
 ]
 
 MIDDLEWARE = [
