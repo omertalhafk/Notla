@@ -129,10 +129,13 @@ USE_I18N = True
 USE_TZ = True
 
 
-# CORS Ayarları - React'in erişmesine izin ver
+# CORS Ayarları
 CORS_ALLOWED_ORIGINS = [
+    "https://notla.vercel.app",
     "http://localhost:3000",  # React çalışacağı adres
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # Yüklenen dosyalar için (notlar, resimler)
 MEDIA_URL = '/media/'
