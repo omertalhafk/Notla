@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Notla",
+  "name": "Notla - Öğrenci Not Uygulaması",
   "icons": [
     {
       "src": "favicon.ico",
