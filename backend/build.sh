@@ -10,3 +10,6 @@ python manage.py collectstatic --no-input
 
 # Veritabanı tablolarını oluştur/güncelle
 python manage.py migrate
+
+# Admin kullanıcısı oluşturma (Kullanıcı: admin, Şifre: 123456)
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@etu.edu.tr', '123456') if not User.objects.filter(username='admin').exists() else None" | python manage.py shell
