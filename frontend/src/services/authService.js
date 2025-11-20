@@ -12,20 +12,18 @@ const authService = {
         return response.data;
     },
 
-    // Giriş yapma fonksiyonu
     login: async (email, password) => {
         const response = await api.post('/auth/login/', {
             email,
             password,
         });
-        
+
         if (response.data.tokens) {
-            // Token'ları tarayıcı hafızasına (localStorage) kaydet
             localStorage.setItem('access_token', response.data.tokens.access);
             localStorage.setItem('refresh_token', response.data.tokens.refresh);
             localStorage.setItem('user', JSON.stringify(response.data.user));
         }
-        
+
         return response.data;
     },
 

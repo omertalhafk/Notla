@@ -9,20 +9,17 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('notlaToken');
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("notlaToken");  
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-  },
-  (error) => Promise.reject(error)
-);
+});
 
 export const authService = {
-  login: (payload) => api.post('/api/auth/login/', payload),
-  register: (payload) => api.post('/api/auth/register/', payload),
+  login: (payload) => api.post('/auth/login/', payload),
+  register: (payload) => api.post('/auth/register/', payload),
 };
 
 

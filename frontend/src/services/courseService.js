@@ -1,62 +1,62 @@
-import api from './api';  // baseURL = http://localhost:8000/api/
+import api from './api';
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('access_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const courseService = {
 
-    // 🔹 1. TÜM DERSLERİ GETİR (LIST)
-    getCourses: async (search = '') => {
-        const params = search ? `?search=${search}` : '';
-        const response = await api.get(`courses/${params}`);
-        return response.data;
-    },
+  getCourses: async (search = '') => {
+    const params = search ? `?search=${search}` : '';
+    const response = await api.get(`/courses/${params}`);
+    return response.data;
+  },
 
-    // 🔹 2. TEK DERS DETAYI (+ notlar + yorumlar)
-    getCourseDetail: async (id) => {
-        const response = await api.get(`courses/${id}/`);
-        return response.data;
-    },
+  getCourseDetail: async (id) => {
+    const response = await api.get(`/courses/${id}/`);
+    return response.data;
+  },
 
-    // 🔹 3. NOT YÜKLE
-    uploadNote: async (courseId, formData) => {
-        const response = await api.post(`courses/${courseId}/notes/`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        return response.data;
-    },
+  uploadNote: async (courseId, formData) => {
+    const response = await api.post(
+      `/courses/${courseId}/notes/`,
+      formData,
+      {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  },
 
-     // ------------------------------
-    // 4) NOTLARI GETİR
-    // /api/notes/?course=ID&file_type=pdf
-    // ------------------------------
-    getNotes: async (courseId = null, fileType = null) => {
-        let params = [];
+  createReview: async (courseId, reviewData) => {
+    const response = await api.post(
+      `/courses/${courseId}/reviews/`,
+      reviewData,
+      {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      }
+    );
+    return response.data;
+  },
 
-        if (courseId) params.push(`course=${courseId}`);
-        if (fileType) params.push(`file_type=${fileType}`);
+  getNotes: async (courseId = null, fileType = null) => {
+    let params = '';
+    if (courseId) params += `?course=${courseId}`;
+    if (fileType) params += `${params ? '&' : '?'}file_type=${fileType}`;
 
-        const query = params.length ? `?${params.join("&")}` : "";
-
-        const res = await api.get(`/api/notes/${query}`);
-        return res.data;
-    },
-
-    // ------------------------------
-    // 5) YORUM EKLE
-    // ------------------------------
-    createReview: async (courseId, reviewData) => {
-        const res = await api.post(
-        `/api/courses/${courseId}/reviews/`,
-        reviewData,
-        {
-            headers: {
-            "Content-Type": "application/json",
-            },
-        }
-        );
-        return res.data;
-    },
-    };
-
+    const response = await api.get(`/notes/${params}`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    return response.data;
+  },
+};
 
 export default courseService;
