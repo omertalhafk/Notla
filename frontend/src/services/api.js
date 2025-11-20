@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -25,15 +25,6 @@ export const authService = {
   register: (payload) => api.post('/api/auth/register/', payload),
 };
 
-export const courseService = {
-  getCourses: () => api.get('/api/courses/'),
-  getCourseDetail: (id) => api.get(`/api/courses/${id}/`),
-  uploadNote: (id, data) =>
-    api.post(`/api/courses/${id}/notes/`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
-  submitReview: (id, data) => api.post(`/api/courses/${id}/reviews/`, data),
-};
 
 export default api;
 

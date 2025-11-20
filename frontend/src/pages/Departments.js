@@ -14,7 +14,7 @@ const departments = [
   },
   {
     title: 'Yapay Zeka Mühendisliği',
-    code: 'YZM',
+    code: 'YAP',
     icon: <GiRobotGolem size={48} />,
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
   },

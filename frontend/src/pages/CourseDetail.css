@@ -1,0 +1,180 @@
+.course-detail-page {
+  padding-top: 40px;
+  padding-bottom: 60px;
+  color: #fff;
+  background: #0b0d12;
+  min-height: 100vh;
+}
+
+.course-header {
+  margin-bottom: 30px;
+}
+
+.course-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.course-subtitle {
+  font-size: 1.1rem;
+  color: #b4b4b4;
+  margin-top: 6px;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: transparent;
+  color: #b4b4b4;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+  border: 1px solid transparent;
+}
+
+.tab-btn:hover {
+  color: #fff;
+}
+
+.tab-btn.active {
+  color: #fff;
+  border-color: #3fa9f5;
+  background: rgba(63, 169, 245, 0.15);
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+  margin-top: 30px;
+}
+
+.note-card {
+  background: #11131a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 22px;
+  transition: 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 180%;
+  height: 180%;
+  background: radial-gradient(
+    circle at top left,
+    rgba(63, 169, 245, 0.12),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: 0.4s;
+}
+
+.note-card:hover::before {
+  opacity: 1;
+}
+
+.note-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(63, 169, 245, 0.4);
+  box-shadow: 0 0 18px rgba(63, 169, 245, 0.25);
+}
+
+.note-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.note-desc {
+  color: #b8b8b8;
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+}
+
+.note-button {
+  display: inline-block;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #3fa9f5 0%, #00ffd5 100%);
+  color: #000;
+  font-weight: 700;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.note-button:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+.empty-text {
+  color: #9f9f9f;
+  font-size: 1.1rem;
+  margin-top: 20px;
+}
+
+.review-card {
+  background: #11131a;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  transition: 0.25s ease;
+  margin-top: 30px !important;
+}
+
+.review-card:hover {
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-4px);
+}
+
+.review-user {
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.review-text {
+  color: #bdbdbd;
+  font-size: 0.95rem;
+}
+
+.course-detail-wrapper {
+  margin-top: 90px !important;
+  margin-left: 40px;
+  margin-right: 20px;
+}
+
+.upload-btn {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #3fa9f5, #00ffd5);
+  color: #000 !important;
+  border-radius: 14px;
+  font-weight: 700;
+  border: none;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.upload-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
