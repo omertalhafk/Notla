@@ -22,7 +22,7 @@ const AnimatedRoutes = ({ user, onLoginSuccess, onLogout }) => {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/departmanlar" element={<Departments />} />
-          <Route path="/courses" element={<CourseList />} />
+          <Route path="/courses" element={<CourseList user={user} />} />
           <Route path="/courses/:id" element={<CourseDetail user={user} />} />
           <Route path="/nasil-calisir" element={<HowItWorks />} />
           <Route path="/hakkimizda" element={<About />} />

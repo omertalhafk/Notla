@@ -72,6 +72,16 @@ const Login = ({ onLoginSuccess }) => {
                       {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
                     </Button>
                   </Form>
+                  <div className="auth-alt-link">
+                    <span>Hesabınız yok mu?</span>
+                    <Button
+                      variant="link"
+                      className="p-0 text-decoration-none text-light fw-semibold"
+                      onClick={() => navigate('/register')}
+                    >
+                      Kayıt Ol
+                    </Button>
+                  </div>
                 </Card.Body>
               </Card>
             </motion.div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -18,6 +18,7 @@ import { courseService } from '../services/api';
 
 const CourseDetail = ({ user }) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,6 +30,11 @@ const CourseDetail = ({ user }) => {
   const [reviewFeedback, setReviewFeedback] = useState({ variant: '', message: '' });
 
   useEffect(() => {
+    if (!user) {
+      alert('Ders notlarını görüntülemek için giriş yapmanız gerekiyor.');
+      navigate('/login');
+      return;
+    }
     const fetchCourse = async () => {
       setLoading(true);
       setError(null);
@@ -43,7 +49,7 @@ const CourseDetail = ({ user }) => {
     };
 
     fetchCourse();
-  }, [id]);
+  }, [id, user, navigate]);
 
   const handleFileChange = (event) => {
     setNoteError('');
@@ -89,6 +95,10 @@ const CourseDetail = ({ user }) => {
       setReviewFeedback({ variant: 'danger', message: 'Değerlendirme kaydedilemedi.' });
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   if (loading) {
     return (

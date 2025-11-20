@@ -42,11 +42,11 @@ const NotlaNavbar = ({ user, onLogout }) => {
     }
 
     return (
-      <div className="d-flex gap-2">
-        <Button variant="outline-light" onClick={() => handleAuthClick('/login')} className="nav-auth-btn">
+      <div className="hero-auth-buttons nav-auth-buttons">
+        <Button variant="outline-light" onClick={() => handleAuthClick('/login')} className="hero-auth-btn hero-login-btn">
           Giriş Yap
         </Button>
-        <Button variant="light" onClick={() => handleAuthClick('/register')} className="nav-auth-btn">
+        <Button onClick={() => handleAuthClick('/register')} className="hero-auth-btn hero-register-btn">
           Kayıt Ol
         </Button>
       </div>

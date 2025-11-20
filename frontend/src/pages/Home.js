@@ -47,7 +47,7 @@ const Home = () => {
               >
                 TOBB ETÜ’de ders notlarına hızlıca ulaş, topluluğa katkını rozetinle göster.
               </motion.p>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="hero-cta">
                 <Button size="lg" onClick={() => navigate('/departmanlar')} className="hero-btn">
                   Hemen Başla
                 </Button>
@@ -105,7 +105,7 @@ const Home = () => {
             </Col>
             <Col md={5}>
               <motion.div whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} viewport={{ once: true }}>
-                <Button variant="outline-light" className="w-100" onClick={() => navigate('/hakkimizda')}>
+                <Button className="about-cta-btn w-100" onClick={() => navigate('/hakkimizda')}>
                   Hakkımızda Sayfasına Git
                 </Button>
               </motion.div>

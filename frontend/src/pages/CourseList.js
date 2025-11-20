@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { courseService } from '../services/api';
 
-const CourseList = () => {
+const CourseList = ({ user }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +17,8 @@ const CourseList = () => {
       setError(null);
       try {
         const { data } = await courseService.getCourses();
-        setCourses(data || []);
+        const list = Array.isArray(data) ? data : data?.results;
+        setCourses(list || []);
       } catch (err) {
         setError('Dersler yüklenirken bir sorun oluştu.');
       } finally {
@@ -39,6 +40,15 @@ const CourseList = () => {
     }
     return courses;
   }, [courses, searchParams]);
+
+  const handleCourseClick = (courseId) => {
+    if (!user) {
+      alert('Ders notlarını görüntülemek için lütfen giriş yapın.');
+      navigate('/login');
+      return;
+    }
+    navigate(`/courses/${courseId}`);
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -64,11 +74,17 @@ const CourseList = () => {
             <motion.div whileHover={{ y: -6 }}>
               <Card className="course-card h-100">
                 <Card.Body>
-                  <Card.Subtitle className="mb-2 text-muted">{course.code}</Card.Subtitle>
+                  {user && <Card.Subtitle className="mb-2 text-muted">{course.code}</Card.Subtitle>}
                   <Card.Title>{course.name}</Card.Title>
-                  <Card.Text className="text-truncate-multiline">{course.description}</Card.Text>
-                  <Button variant="primary" onClick={() => navigate(`/courses/${course.id}`)}>
-                    Detayları Gör
+                  {user ? (
+                    <Card.Text className="text-truncate-multiline">{course.description}</Card.Text>
+                  ) : (
+                    <Card.Text className="text-muted small">
+                      Ders notlarını görebilmek için giriş yapmalısınız.
+                    </Card.Text>
+                  )}
+                  <Button variant="primary" onClick={() => handleCourseClick(course.id)}>
+                    {user ? 'Detayları Gör' : 'Giriş Yap'}
                   </Button>
                 </Card.Body>
               </Card>

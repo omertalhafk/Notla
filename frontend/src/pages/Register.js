@@ -41,6 +41,7 @@ const Register = () => {
         username: form.username,
         email: form.email,
         password: form.password,
+        password_confirm: form.confirmPassword,
       });
       setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz.');
       setTimeout(() => navigate('/login'), 1500);
