@@ -1,83 +1,96 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import authService from '../services/authService';
-import './Login.css';
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import authService from "../services/authService";
 
-function Login() {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+const Login = ({ onLoginSuccess }) => {
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+  const validate = () => {
+    if (!form.email.includes('@')) {
+      setError('Lütfen geçerli bir email giriniz.');
+      return false;
+    }
+    if (form.password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      const { data } = await authService.login({ email: form.email, password: form.password });
+      onLoginSuccess?.(data);
+      navigate('/');
+    } catch (err) {
+      setError('Giriş başarısız. Bilgilerinizi kontrol edin.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        try {
-            await authService.login(formData.email, formData.password);
-            navigate('/'); // Ana sayfaya yönlendir
-        } catch (err) {
-            setError(err.response?.data?.non_field_errors?.[0] || 'Giriş başarısız!');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="login-container">
-            <div className="login-box">
-                <h1>NOTLA</h1>
-                <h2>Giriş Yap</h2>
-                
-                {error && <div className="error-message">{error}</div>}
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="ornek@tobb.edu.tr"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Şifre</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-                    </button>
-                </form>
-
-                <p className="register-link">
-                    Hesabın yok mu? <Link to="/register">Kayıt Ol</Link>
-                </p>
-            </div>
-        </div>
-    );
-}
+  return (
+    <div className="auth-page">
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6}>
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="auth-card">
+                <Card.Body>
+                  <h3 className="mb-3">Giriş Yap</h3>
+                  <p className="text-muted mb-4">Notlarını yönetmek için hesabına giriş yap.</p>
+                  {error && <Alert variant="danger">{error}</Alert>}
+                  <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>E-posta</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="ornek@universite.edu"
+                        value={form.email}
+                        onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-4">
+                      <Form.Label>Şifre</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Şifrenizi giriniz"
+                        value={form.password}
+                        onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                      />
+                    </Form.Group>
+                    <Button type="submit" disabled={loading} className="w-100">
+                      {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                    </Button>
+                  </Form>
+                  <div className="auth-alt-link">
+                    <span>Hesabınız yok mu?</span>
+                    <Button
+                      variant="link"
+                      className="p-0 text-decoration-none text-light fw-semibold"
+                      onClick={() => navigate('/register')}
+                    >
+                      Kayıt Ol
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
 
 export default Login;
+

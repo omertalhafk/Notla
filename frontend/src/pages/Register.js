@@ -1,128 +1,121 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import authService from '../services/authService';
-import './Login.css'; // Aynı CSS'i kullanıyoruz
+import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import authService from "../services/authService";
 
-function Register() {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: '',
-        username: '',
-        password: '',
-        password_confirm: '',
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+const Register = () => {
+  const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+  const validate = () => {
+    if (!form.username.trim()) {
+      setError('Kullanıcı adı zorunludur.');
+      return false;
+    }
+    if (!form.email.endsWith('@etu.edu.tr')) {
+      setError('Sadece etu.edu.tr uzantılı e-postalar kabul edilir.');
+      return false;
+    }
+    if (form.password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır.');
+      return false;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError('Şifreler uyuşmuyor.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      await authService.register({
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        password_confirm: form.confirmPassword,
+      });
+      setSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz.');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err) {
+      setError('Kayıt işlemi sırasında bir hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (formData.password !== formData.password_confirm) {
-            setError('Şifreler eşleşmiyor!');
-            return;
-        }
-
-        setLoading(true);
-
-        try {
-            await authService.register(
-                formData.email,
-                formData.username,
-                formData.password,
-                formData.password_confirm
-            );
-            alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
-            navigate('/login');
-        } catch (err) {
-            const errorData = err.response?.data;
-            if (errorData?.email) {
-                setError(errorData.email[0]);
-            } else if (errorData?.username) {
-                setError(errorData.username[0]);
-            } else {
-                setError('Kayıt başarısız!');
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="login-container">
-            <div className="login-box">
-                <h1>NOTLA</h1>
-                <h2>Kayıt Ol</h2>
-                
-                {error && <div className="error-message">{error}</div>}
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="ornek@tobb.edu.tr"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Kullanıcı Adı</label>
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="kullaniciadi"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Şifre</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Şifre Tekrar</label>
-                        <input
-                            type="password"
-                            name="password_confirm"
-                            placeholder="••••••••"
-                            value={formData.password_confirm}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Kaydediliyor...' : 'Kayıt Ol'}
-                    </button>
-                </form>
-
-                <p className="register-link">
-                    Hesabın var mı? <Link to="/login">Giriş Yap</Link>
-                </p>
-            </div>
-        </div>
-    );
-}
+  return (
+    <div className="auth-page">
+      <Container>
+        <Row className="justify-content-center">
+          <Col md={6}>
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="auth-card">
+                <Card.Body>
+                  <h3 className="mb-3">Kayıt Ol</h3>
+                  <p className="text-muted mb-4">TOBB ETÜ topluluğuna katıl, notlarını paylaş.</p>
+                  {error && <Alert variant="danger">{error}</Alert>}
+                  {success && <Alert variant="success">{success}</Alert>}
+                  <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Kullanıcı Adı</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="notla_ogrenci"
+                        value={form.username}
+                        onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>E-posta</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="ad.soyad@etu.edu.tr"
+                        value={form.email}
+                        onChange={(e) =>
+                          setForm((prev) => ({ ...prev, email: e.target.value.toLowerCase().trim() }))
+                        }
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Şifre</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Şifrenizi giriniz"
+                        value={form.password}
+                        onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-4">
+                      <Form.Label>Şifre Tekrar</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Şifrenizi tekrar giriniz"
+                        value={form.confirmPassword}
+                        onChange={(e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                      />
+                    </Form.Group>
+                    <Button type="submit" disabled={loading} className="w-100">
+                      {loading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+                    </Button>
+                  </Form>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
 
 export default Register;
+

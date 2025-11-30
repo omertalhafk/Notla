@@ -1,340 +1,280 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import courseService from '../services/courseService';
-import authService from '../services/authService';
-import './CourseDetail.css';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import courseService from "../services/courseService";
+import { Button } from "react-bootstrap";
+import "./CourseDetail.css";
 
-function CourseDetail() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [course, setCourse] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('notes'); // 'notes' veya 'reviews'
-    
-    // Note Upload
-    const [showUploadForm, setShowUploadForm] = useState(false);
-    const [uploadData, setUploadData] = useState({
-        title: '',
-        description: '',
-        file_type: 'pdf',
-        file: null,
-    });
-    const [uploading, setUploading] = useState(false);
+const CourseDetail = () => {
+  const { id } = useParams();
 
-    // Review
-    const [showReviewForm, setShowReviewForm] = useState(false);
-    const [reviewData, setReviewData] = useState({
-        rating: 5,
-        comment: '',
-        difficulty: 3,
-        workload: 3,
-    });
-    const [submittingReview, setSubmittingReview] = useState(false);
+  const [course, setCourse] = useState(null);
+  const [activeTab, setActiveTab] = useState("notes");
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadCourse();
-    }, [id]);
+  // Not yükleme form state
+  const [showUpload, setShowUpload] = useState(false);
+  const [noteForm, setNoteForm] = useState({
+    title: "",
+    description: "",
+    file_type: "pdf",
+    file: null,
+  });
 
-    const loadCourse = async () => {
-        try {
-            setLoading(true);
-            const data = await courseService.getCourseDetail(id);
-            setCourse(data);
-        } catch (error) {
-            console.error('Ders yüklenemedi:', error);
-            alert('Ders yüklenirken hata oluştu!');
-        } finally {
-            setLoading(false);
-        }
+  // Review form state
+  const [showReview, setShowReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    comment: "",
+    difficulty: 3,
+    workload: 3,
+  });
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await courseService.getCourseDetail(id);
+        setCourse(data);
+      } catch (e) {
+        console.error("Ders yüklenemedi", e);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleFileChange = (e) => {
-        setUploadData({
-            ...uploadData,
-            file: e.target.files[0],
-        });
-    };
+    loadData();
+  }, [id]);
 
-    const handleUploadSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!uploadData.file) {
-            alert('Lütfen dosya seçin!');
-            return;
-        }
+  // Not yükleme
+  const handleUpload = async () => {
+    try {
+      if (!noteForm.file) {
+        alert("Lütfen bir dosya seçin.");
+        return;
+      }
 
-        const formData = new FormData();
-        formData.append('title', uploadData.title);
-        formData.append('description', uploadData.description);
-        formData.append('file_type', uploadData.file_type);
-        formData.append('file', uploadData.file);
+      const fd = new FormData();
+      fd.append("title", noteForm.title);
+      fd.append("description", noteForm.description);
+      fd.append("file_type", noteForm.file_type);
+      fd.append("file", noteForm.file);
 
-        try {
-            setUploading(true);
-            await courseService.uploadNote(id, formData);
-            alert('Not başarıyla yüklendi! 📄');
-            setShowUploadForm(false);
-            setUploadData({ title: '', description: '', file_type: 'pdf', file: null });
-            loadCourse(); // Sayfayı yenile
-        } catch (error) {
-            console.error('Not yüklenemedi:', error);
-            alert('Not yüklenirken hata oluştu!');
-        } finally {
-            setUploading(false);
-        }
-    };
+      await courseService.uploadNote(id, fd);
+      alert("Not başarıyla yüklendi!");
 
-    const handleReviewSubmit = async (e) => {
-        e.preventDefault();
+      setShowUpload(false);
 
-        try {
-            setSubmittingReview(true);
-            await courseService.createReview(id, {
-                ...reviewData,
-                is_anonymous: true,
-            });
-            alert('Değerlendirme başarıyla eklendi! ⭐');
-            setShowReviewForm(false);
-            setReviewData({ rating: 5, comment: '', difficulty: 3, workload: 3 });
-            loadCourse(); // Sayfayı yenile
-        } catch (error) {
-            console.error('Yorum eklenemedi:', error);
-            if (error.response?.data?.non_field_errors) {
-                alert(error.response.data.non_field_errors[0]);
-            } else {
-                alert('Değerlendirme eklenirken hata oluştu!');
-            }
-        } finally {
-            setSubmittingReview(false);
-        }
-    };
-
-    if (loading) {
-        return <div className="loading-page">Yükleniyor...</div>;
+      // listeyi yenile
+      const d = await courseService.getCourseDetail(id);
+      setCourse(d);
+    } catch (err) {
+      console.error("Not yüklenemedi", err);
+      alert("Not yüklenirken hata oluştu. (Konsola bak)");
     }
+  };
 
-    if (!course) {
-        return <div className="error-page">Ders bulunamadı!</div>;
+  // Yorum gönderme
+  const handleReviewSubmit = async () => {
+    try {
+      if (!reviewForm.comment.trim()) {
+        alert("Lütfen bir yorum yazın.");
+        return;
+      }
+      await courseService.createReview(id, reviewForm);
+
+      alert("Değerlendirme eklendi!");
+      setShowReview(false);
+
+      const d = await courseService.getCourseDetail(id);
+      setCourse(d);
+    } catch (err) {
+      console.error("Yorum eklenemedi:", err);
+      alert("Yorum eklenirken hata oluştu. (Muhtemelen 401: Giriş yapman gerekiyor)");
     }
+  };
 
-    return (
-        <div className="course-detail-container">
-            {/* Header */}
-            <header className="detail-header">
-                <div className="header-content">
-                    <button onClick={() => navigate('/')} className="back-btn">
-                        ← Geri
-                    </button>
-                    <h1>NOTLA</h1>
-                    <button onClick={() => authService.logout() || navigate('/login')} className="logout-btn">
-                        Çıkış
-                    </button>
-                </div>
-            </header>
+  if (loading) return <p>Ders yükleniyor...</p>;
+  if (!course) return <p>Ders bulunamadı.</p>;
 
-            {/* Course Info */}
-            <div className="course-info">
-                <div className="info-content">
-                    <div className="course-code-badge">{course.code}</div>
-                    <h2>{course.name}</h2>
-                    {course.instructor && <p className="instructor">👨‍🏫 {course.instructor}</p>}
-                    {course.description && <p className="description">{course.description}</p>}
-                    
-                    <div className="course-meta">
-                        <span>📝 {course.notes?.length || 0} Not</span>
-                        <span>💬 {course.reviews?.length || 0} Değerlendirme</span>
-                        <span>⭐ {course.average_rating?.toFixed(1) || '0.0'}</span>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="course-detail">
+      <div className="course-detail-wrapper">
+        <h2>{course.name}</h2>
 
-            {/* Actions */}
-            <div className="actions-section">
-                <button onClick={() => setShowUploadForm(!showUploadForm)} className="action-btn upload-btn">
-                    📤 Not Yükle
-                </button>
-                <button onClick={() => setShowReviewForm(!showReviewForm)} className="action-btn review-btn">
-                    ⭐ Değerlendir
-                </button>
-            </div>
+        <div className="tabs-row">
+          <div className="tabs">
+            <Button
+              variant={activeTab === "notes" ? "primary" : "outline-primary"}
+              onClick={() => setActiveTab("notes")}
+            >
+              Ders Notları
+            </Button>
 
-            {/* Upload Form */}
-            {showUploadForm && (
-                <div className="form-modal">
-                    <div className="modal-content">
-                        <h3>Not Yükle</h3>
-                        <form onSubmit={handleUploadSubmit}>
-                            <input
-                                type="text"
-                                placeholder="Not Başlığı"
-                                value={uploadData.title}
-                                onChange={(e) => setUploadData({...uploadData, title: e.target.value})}
-                                required
-                            />
-                            <textarea
-                                placeholder="Açıklama (opsiyonel)"
-                                value={uploadData.description}
-                                onChange={(e) => setUploadData({...uploadData, description: e.target.value})}
-                                rows="3"
-                            />
-                            <select
-                                value={uploadData.file_type}
-                                onChange={(e) => setUploadData({...uploadData, file_type: e.target.value})}
-                            >
-                                <option value="pdf">PDF</option>
-                                <option value="docx">Word</option>
-                                <option value="pptx">PowerPoint</option>
-                                <option value="jpg">Resim (JPG)</option>
-                                <option value="png">Resim (PNG)</option>
-                                <option value="txt">Metin</option>
-                            </select>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                required
-                            />
-                            <div className="form-actions">
-                                <button type="submit" disabled={uploading}>
-                                    {uploading ? 'Yükleniyor...' : 'Yükle'}
-                                </button>
-                                <button type="button" onClick={() => setShowUploadForm(false)}>
-                                    İptal
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <Button
+              variant={activeTab === "reviews" ? "primary" : "outline-primary"}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Değerlendirmeler
+            </Button>
+          </div>
 
-            {/* Review Form */}
-            {showReviewForm && (
-                <div className="form-modal">
-                    <div className="modal-content">
-                        <h3>Ders Değerlendirmesi</h3>
-                        <form onSubmit={handleReviewSubmit}>
-                            <label>
-                                Puan: {reviewData.rating} ⭐
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="5"
-                                    value={reviewData.rating}
-                                    onChange={(e) => setReviewData({...reviewData, rating: parseInt(e.target.value)})}
-                                />
-                            </label>
-                            <textarea
-                                placeholder="Yorumunuz..."
-                                value={reviewData.comment}
-                                onChange={(e) => setReviewData({...reviewData, comment: e.target.value})}
-                                rows="4"
-                                required
-                            />
-                            <label>
-                                Zorluk: {reviewData.difficulty}/5
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="5"
-                                    value={reviewData.difficulty}
-                                    onChange={(e) => setReviewData({...reviewData, difficulty: parseInt(e.target.value)})}
-                                />
-                            </label>
-                            <label>
-                                İş Yükü: {reviewData.workload}/5
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="5"
-                                    value={reviewData.workload}
-                                    onChange={(e) => setReviewData({...reviewData, workload: parseInt(e.target.value)})}
-                                />
-                            </label>
-                            <div className="form-actions">
-                                <button type="submit" disabled={submittingReview}>
-                                    {submittingReview ? 'Gönderiliyor...' : 'Gönder'}
-                                </button>
-                                <button type="button" onClick={() => setShowReviewForm(false)}>
-                                    İptal
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+          {activeTab === "notes" && (
+            <button className="upload-btn" onClick={() => setShowUpload(true)}>
+              Not Yükle
+            </button>
+          )}
 
-            {/* Tabs */}
-            <div className="tabs">
-                <button
-                    className={activeTab === 'notes' ? 'active' : ''}
-                    onClick={() => setActiveTab('notes')}
-                >
-                    📝 Notlar ({course.notes?.length || 0})
-                </button>
-                <button
-                    className={activeTab === 'reviews' ? 'active' : ''}
-                    onClick={() => setActiveTab('reviews')}
-                >
-                    💬 Değerlendirmeler ({course.reviews?.length || 0})
-                </button>
-            </div>
-
-            {/* Content */}
-            <div className="tab-content">
-                {activeTab === 'notes' && (
-                    <div className="notes-list">
-                        {course.notes?.length === 0 ? (
-                            <p className="empty-message">Henüz not eklenmemiş. İlk sen ekle! 📄</p>
-                        ) : (
-                            course.notes.map((note) => (
-                                <div key={note.id} className="note-item">
-                                    <div className="note-header">
-                                        <h4>{note.title}</h4>
-                                        <span className="file-type-badge">{note.file_type?.toUpperCase()}</span>
-                                    </div>
-                                    {note.description && <p>{note.description}</p>}
-                                    <div className="note-footer">
-                                        <span>👤 {note.user_email}</span>
-                                        <span>👁️ {note.view_count} görüntülenme</span>
-                                        <span>⬇️ {note.download_count} indirme</span>
-                                        <a href={note.file_url} target="_blank" rel="noopener noreferrer" className="download-link">
-                                            İndir
-                                        </a>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                )}
-
-                {activeTab === 'reviews' && (
-                    <div className="reviews-list">
-                        {course.reviews?.length === 0 ? (
-                            <p className="empty-message">Henüz değerlendirme yapılmamış. İlk sen yap! ⭐</p>
-                        ) : (
-                            course.reviews.map((review) => (
-                                <div key={review.id} className="review-item">
-                                    <div className="review-header">
-                                        <span className="rating">{'⭐'.repeat(review.rating)}</span>
-                                        <span className="review-date">
-                                            {new Date(review.created_at).toLocaleDateString('tr-TR')}
-                                        </span>
-                                    </div>
-                                    <p className="review-comment">{review.comment}</p>
-                                    <div className="review-meta">
-                                        {review.difficulty && <span>Zorluk: {review.difficulty}/5</span>}
-                                        {review.workload && <span>İş Yükü: {review.workload}/5</span>}
-                                        <span className="review-author">
-                                            {review.is_anonymous ? '👤 Anonim' : review.user_email}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                )}
-            </div>
+          {activeTab === "reviews" && (
+            <button className="upload-btn" onClick={() => setShowReview(true)}>
+              Değerlendirme Yap
+            </button>
+          )}
         </div>
-    );
-}
+      </div>
+
+      {/* ----- NOTLAR TAB ----- */}
+      {activeTab === "notes" && (
+        <div className="notes-grid">
+          {course.notes && course.notes.length > 0 ? (
+            course.notes.map((note) => (
+              <div key={note.id} className="note-card">
+                <h4 className="note-title">{note.title}</h4>
+                <p className="note-desc">{note.description}</p>
+
+                <a
+                  href={note.file_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="note-button"
+                >
+                  📄 Dosyayı Aç
+                </a>
+              </div>
+            ))
+          ) : (
+            <p className="empty-text">Henüz not eklenmemiş.</p>
+          )}
+        </div>
+      )}
+
+      {/* ----- YORUMLAR TAB ----- */}
+      {activeTab === "reviews" && (
+        <div className="reviews-section">
+          {course.reviews && course.reviews.length > 0 ? (
+            course.reviews.map((review) => (
+              <div key={review.id} className="review-card">
+                <strong>{review.rating} ⭐</strong>
+                <p>{review.comment}</p>
+              </div>
+            ))
+          ) : (
+            <p>Henüz değerlendirme yapılmamış.</p>
+          )}
+        </div>
+      )}
+
+      {/* NOT YÜKLE MODAL */}
+      {showUpload && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Not Yükle</h3>
+
+            <input
+              type="text"
+              placeholder="Başlık"
+              className="modal-input"
+              value={noteForm.title}
+              onChange={(e) =>
+                setNoteForm({ ...noteForm, title: e.target.value })
+              }
+            />
+
+            <textarea
+              placeholder="Açıklama"
+              className="modal-input"
+              value={noteForm.description}
+              onChange={(e) =>
+                setNoteForm({ ...noteForm, description: e.target.value })
+              }
+            />
+
+            <select
+              className="modal-input"
+              value={noteForm.file_type}
+              onChange={(e) =>
+                setNoteForm({ ...noteForm, file_type: e.target.value })
+              }
+            >
+              <option value="pdf">PDF</option>
+              <option value="docx">Word</option>
+              <option value="pptx">PowerPoint</option>
+              <option value="jpg">JPG</option>
+              <option value="png">PNG</option>
+              <option value="txt">TXT</option>
+              <option value="other">Diğer</option>
+            </select>
+
+            <input
+              type="file"
+              className="modal-input"
+              onChange={(e) =>
+                setNoteForm({ ...noteForm, file: e.target.files[0] })
+              }
+            />
+
+            <button className="modal-btn" onClick={handleUpload}>
+              Yükle
+            </button>
+            <button
+              className="modal-close"
+              onClick={() => setShowUpload(false)}
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* REVIEW MODAL */}
+      {showReview && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Değerlendirme Yap</h3>
+
+            <input
+              type="number"
+              min="1"
+              max="5"
+              className="modal-input"
+              value={reviewForm.rating}
+              onChange={(e) =>
+                setReviewForm({ ...reviewForm, rating: e.target.value })
+              }
+            />
+
+            <textarea
+              className="modal-input"
+              placeholder="Yorum"
+              value={reviewForm.comment}
+              onChange={(e) =>
+                setReviewForm({ ...reviewForm, comment: e.target.value })
+              }
+            />
+
+            <button className="modal-btn" onClick={handleReviewSubmit}>
+              Gönder
+            </button>
+
+            <button
+              className="modal-close"
+              onClick={() => setShowReview(false)}
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default CourseDetail;
