@@ -146,9 +146,30 @@ def note_list(request):
     """
     Tüm notları listele.
     
-    GET /api/notes/
+    GET /api/courses/notes/   (şu an URL’lerin böyle ayarlı)
     Query params:
-        - course: Ders ID'si
-        - file_type: Dosya türü
+        - course: Ders ID'si (ör: ?course=1)
+        - file_type: Dosya türü (ör: ?file_type=pdf)
     """
-    notes = Note.objects.all().select_relat
+    # İlişkili user ve course'u tek sorguda çekmek için
+    notes = Note.objects.select_related('course', 'user').all()
+
+    # Filtre: course
+    course_id = request.query_params.get('course')
+    if course_id:
+        notes = notes.filter(course_id=course_id)
+
+    # Filtre: file_type
+    file_type = request.query_params.get('file_type')
+    if file_type:
+        notes = notes.filter(file_type=file_type)
+
+    # Tarihe göre sırala (modelde created_at varsa)
+    if hasattr(Note, 'created_at'):
+        notes = notes.order_by('-created_at')
+
+    serializer = NoteSerializer(notes, many=True, context={'request': request})
+    return Response({
+        'count': notes.count(),
+        'results': serializer.data
+    })
