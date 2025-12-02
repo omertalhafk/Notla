@@ -6,7 +6,8 @@
 ```
 Notla/
 ├── backend/         # Django REST API
-├── frontend/        # React (yakında)
+├── frontend/        # React
+├── UML_Diagram/     # UML diyagramları
 └── docs/            # Proje dökümanları
 ```
 
@@ -18,9 +19,16 @@ cd backend
 python -m venv venv
 venv\Scripts\activate  # Windows
 source venv/bin/activate  # Mac/Linux
-pip install django djangorestframework django-cors-headers psycopg2-binary python-dotenv pillow
+pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm start
 ```
 
 ## Ekip
@@ -33,4 +41,4 @@ python manage.py runserver
 ## Teknolojiler
 
 - **Backend:** Django,PostgreSQL
-- **Frontend:** React (yakında)
+- **Frontend:** React
