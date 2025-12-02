@@ -9,19 +9,16 @@ const api = axios.create({
   },
 });
 
+// Her istekten önce çalışır: Token varsa header'a ekler
 api.interceptors.request.use((config) => {
+    // App.js ile uyumlu olması için 'notlaToken' kullanıyoruz
     const token = localStorage.getItem("notlaToken");  
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
+}, (error) => {
+    return Promise.reject(error);
 });
 
-export const authService = {
-  login: (payload) => api.post('/auth/login/', payload),
-  register: (payload) => api.post('/auth/register/', payload),
-};
-
-
 export default api;
-
