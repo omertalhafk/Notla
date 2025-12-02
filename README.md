@@ -1,6 +1,5 @@
-# NOTLA
-
-Üniversite öğrencilerinin ders notlarını paylaşabildiği ve dersleri değerlendirbildiği platform.
+# NOTLA – Üniversite Ders Notu Paylaşım Platformu
+Notla, TOBB ETÜ öğrencileri için geliştirilmiş; ders notu paylaşımı, ders değerlendirmeleri ve akademik yardımlaşmayı dijital ortama taşıyan modern bir web platformudur.
 
 ## Proje Yapısı
 
