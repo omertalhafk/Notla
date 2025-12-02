@@ -1,106 +1,101 @@
-# 📚 NOTLA – Üniversite Ders Notu Paylaşım Platformu
+# NOTLA
 
-Notla, TOBB ETÜ öğrencileri için geliştirilmiş; ders notu paylaşımı, ders değerlendirmeleri ve akademik yardımlaşmayı dijital ortama taşıyan modern bir web platformudur.
+Üniversite öğrencilerinin ders notlarını paylaşabildiği ve dersleri değerlendirbildiği platform.
 
-# 🚀 Özellikler
+## Proje Yapısı
 
-🔐 Güvenli Kimlik Doğrulama
-@etu.edu.tr e-posta uzantısı ile kayıt olma ve JWT tabanlı oturum yönetimi
+```
+Notla/
+├── backend/                # Django REST API
+├── frontend/               # React
+├── UML_Diagram/            # UML diyagramları
+└── docs/                   # Proje dokümanları
+```
 
-📂 Not Paylaşımı
-PDF, resim ve ofis dosyalarını yükleme, önizleme ve indirme
+## Kurulum
 
-⭐ Ders Değerlendirme Sistemi
-Dersleri zorluk, iş yükü ve memnuniyet kriterlerine göre puanlama ve yorum yapma
+### Backend
 
-🔍 Gelişmiş Arama Motoru
-Ders adı veya koduna göre anlık filtreleme
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Mac/Linux
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
 
-🏆 Rozet Sistemi
-Not paylaşan kullanıcıları ödüllendiren topluluk rozetleri
+### Frontend
 
-# 🛠 Kullanılan Teknolojiler
+```bash
+cd frontend
+npm install
+npm start
+```
 
-Backend
--Python, Django, Django REST Framework
--PostgreSQL
--SimpleJWT
--Django Media Files
--python-dotenv, CORS Headers
+## Özellikler
 
-Frontend
--React.js
--React Bootstrap, Bootstrap 5, Framer Motion
--React Router v6
--Axios (Interceptor yapısı kullanılarak)
+### 🔐 Güvenli Kimlik Doğrulama
+- @etu.edu.tr e-posta uzantısı ile kayıt
+- JWT tabanlı oturum yönetimi
 
-# ⚙️ Kurulum Rehberi
+### 📂 Not Paylaşımı
+- PDF, resim ve ofis dosyalarını yükleme
+- Önizleme ve indirme özellikleri
 
-Aşağıdaki adımları takip ederek projeyi yerel ortamda çalıştırabilirsiniz.
+### ⭐ Ders Değerlendirme Sistemi
+- Zorluk, iş yükü ve memnuniyet puanlaması
+- Yorum yapma imkanı
 
-🧩 1. Backend Kurulumu (Django)
-📌 Backend klasörüne gidin
--cd backend
+### 🔍 Gelişmiş Arama
+- Ders adı veya koduna göre filtreleme
 
-📌 Sanal ortam oluşturun ve aktif edin
+### 🏆 Rozet Sistemi
+- Not paylaşan kullanıcıları ödüllendirme
 
-Windows:
--python -m venv venv
--venv\Scripts\activate
+## Teknolojiler
 
-MacOS / Linux:
--python3 -m venv venv
--source venv/bin/activate
+**Backend**
+- Python, Django, Django REST Framework
+- PostgreSQL
+- SimpleJWT
+- CORS Headers
 
-📌 Bağımlılıkları yükleyin
--pip install -r requirements.txt
+**Frontend**
+- React.js
+- React Bootstrap, Bootstrap 5
+- Framer Motion
+- React Router v6
+- Axios
 
-🔐 .env Dosyasını Oluşturun
+## Ortam Değişkenleri
 
-backend klasörü içinde .env adlı bir dosya oluşturun:
+Backend klasöründe `.env` dosyası oluşturun:
 
-/Django Secret Key (aşağıdaki komutla üretin)
+```env
+# Django Secret Key
 SECRET_KEY=BURAYA_SECRET_KEY_GELECEK
 
-/Geliştirme ortamı
+# Geliştirme ortamı
 DEBUG=True
 
-/PostgreSQL Ayarları
+# PostgreSQL Ayarları
 DB_NAME=notla_db
 DB_USER=postgres
 DB_PASSWORD=veritabani_sifreniz
 DB_HOST=localhost
 DB_PORT=5432
+```
 
 Secret Key oluşturmak için:
--python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
 
-📌 Veritabanını hazırlayın
--python manage.py makemigrations
--python manage.py migrate
+## Proje Klasör Yapısı
 
-📌 Backend sunucusunu başlatın
--python manage.py runserver
-
-
-➡️ Backend çalışıyor: http://localhost:8000
-
-🎨 2. Frontend Kurulumu (React)
-📌 Frontend klasörüne gidin
--cd frontend
-
-📌 Bağımlılıkları yükleyin
--npm install
-/Hata alırsanız:
--npm install --legacy-peer-deps
-
-📌 Uygulamayı başlatın
--npm start
-
-
-➡️ Frontend çalışıyor: http://localhost:3000
-
-# 📁 Proje Klasör Yapısı
+```
 Notla/
 ├── backend/
 │   ├── accounts/           # Kullanıcı işlemleri
@@ -118,18 +113,20 @@ Notla/
 │   └── public/
 │
 └── README.md
+```
 
-# 👥 Geliştirici Ekibi
+## Geliştirici Ekibi
 
-Abdullah Arda Gündoğdu
+- Abdullah Arda Gündoğdu
+- Ömer Talha Akbulut
+- Yunus Emre Özçelik
+- İsmail Emre Yıldız
 
-Ömer Talha Akbulut
+## Lisans
 
-Yunus Emre Özçelik
+Bu proje eğitim ve geliştirme amaçlıdır. Kaynak kodları açık kaynak olup, ticari kullanım izne tabidir.
 
-İsmail Emre Yıldız
+---
 
-# 📄 Lisans
-
-Bu proje eğitim ve geliştirme amaçlıdır.
-Kaynak kodları açık kaynak olup, ticari kullanım izne tabidir.
+**Backend:** http://localhost:8000  
+**Frontend:** http://localhost:3000
