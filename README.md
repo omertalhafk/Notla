@@ -8,9 +8,8 @@ Notla/
 ├── backend/         # Django REST API
 ├── frontend/        # React
 ├── docs/            # Dökümanlar
-├── UML_Diagram/     # UML diyagramları (görsel)
-├── README.md        # README dosyası
-└── UML_DIAGRAMS.md  # UML diyagramları (mermaid)
+├── UML_Diagram/     # UML diyagramları
+└── README.md        # README dosyası
 ```
 
 ## Kurulum
