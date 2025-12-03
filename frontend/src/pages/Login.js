@@ -15,8 +15,8 @@ const Login = ({ onLoginSuccess }) => {
       setError('Lütfen geçerli bir email giriniz.');
       return false;
     }
-    if (form.password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır.');
+    if (form.password.length < 1) { // Basit kontrol, detaylı kontrol backend'de
+      setError('Şifre alanı boş bırakılamaz.');
       return false;
     }
     setError('');
@@ -27,12 +27,30 @@ const Login = ({ onLoginSuccess }) => {
     event.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    
     try {
-      const { data } = await authService.login({ email: form.email, password: form.password });
-      onLoginSuccess?.(data);
+      // Düzeltme: authService artık veriyi direkt dönüyor (response.data olarak)
+      const responseData = await authService.login({ 
+        email: form.email, 
+        password: form.password 
+      });
+      
+      // Başarılı olursa App.js'e sadece kullanıcı bilgisini haber veriyoruz
+      if (onLoginSuccess) {
+        onLoginSuccess(responseData.user);
+      }
+      
       navigate('/');
     } catch (err) {
-      setError('Giriş başarısız. Bilgilerinizi kontrol edin.');
+      console.error("Giriş hatası:", err);
+      // Backend'den gelen özel hata mesajı varsa göster, yoksa genel hata
+      if (err.response && err.response.data && err.response.data.detail) {
+        setError(err.response.data.detail);
+      } else if (err.response && err.response.data && err.response.data.non_field_errors) {
+        setError(err.response.data.non_field_errors[0]);
+      } else {
+        setError('Giriş başarısız. E-posta veya şifre hatalı olabilir.');
+      }
     } finally {
       setLoading(false);
     }
@@ -54,7 +72,7 @@ const Login = ({ onLoginSuccess }) => {
                       <Form.Label>E-posta</Form.Label>
                       <Form.Control
                         type="email"
-                        placeholder="ornek@universite.edu"
+                        placeholder="ornek@etu.edu.tr"
                         value={form.email}
                         onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
                       />
@@ -93,4 +111,3 @@ const Login = ({ onLoginSuccess }) => {
 };
 
 export default Login;
-

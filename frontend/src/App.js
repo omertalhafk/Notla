@@ -1,3 +1,4 @@
+// Dosya: frontend/src/App.js
 import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -39,9 +40,16 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('notlaUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // GÜVENLİ VERİ OKUMA (Çökme Önleyici)
+    try {
+      const storedUser = localStorage.getItem('notlaUser');
+      if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Localstorage verisi bozuk, temizleniyor...", error);
+      localStorage.removeItem('notlaUser');
+      localStorage.removeItem('notlaToken');
     }
   }, []);
 
@@ -75,4 +83,3 @@ const App = () => {
 };
 
 export default App;
-
